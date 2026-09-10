@@ -10,6 +10,7 @@ import br.pucpr.planet.PlanetaColumns;
 import br.pucpr.table.Table;
 import br.pucpr.table.TableBuilder;
 import br.pucpr.table.model.ColumnTableData;
+import br.pucpr.table.model.PaginatedTableData;
 import br.pucpr.user.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -30,13 +31,15 @@ public class Main {
     final var usuariosData =
         new ColumnTableData<>(
             usuarios, new IdColumn(), new CpfColumn(), new EmailColumn(), new NameColumn());
+    final var usuariosPaginados = new PaginatedTableData(usuariosData, 3);
 
     System.out.println("IMPRIMINDO USUARIOS");
     System.out.println("-------------------");
-    new Table(usuariosData, LIGHT, true)
+    new Table(usuariosPaginados, LIGHT, true)
         .print();
 
     usuariosData.addRow(new User(107L, "Paula Nunes", "paula.nunes@email.com", "33344455566"));
+    usuariosPaginados.nextPage();
 
     final var planetas = new ArrayList<Planet>();
     planetas.add(new Planet("Mercúrio", 4879, 57_910_000L, ROCK));
@@ -52,7 +55,9 @@ public class Main {
     System.out.println();
     System.out.println("IMPRIMINDO PLANETAS");
     System.out.println("-------------------");
-    new Table(new ColumnTableData<>(planetas, PlanetaColumns.values())).print();
+    var planetasPaginados = new PaginatedTableData(new ColumnTableData<>(planetas, PlanetaColumns.values()), 4);
+    new Table(planetasPaginados).print();
+    planetasPaginados.nextPage();
 
     System.out.println("PLANETAS REFLETIDOS");
     System.out.println("-------------------");
@@ -66,7 +71,8 @@ public class Main {
                 c.add(PlanetaColumns.values())
                     .add(
                         "Distance (au)",
-                        p -> "%,11.2f".formatted(Planet.kmToAu(p.sunDistanceKm()))))
+                        p -> "%,11.2f".formatted(Planet.kmToAu(p.sunDistanceKm()))),
+            3)
         .print();
   }
 }
