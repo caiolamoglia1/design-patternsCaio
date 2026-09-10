@@ -1,10 +1,12 @@
 package br.pucpr.table;
 
 import br.pucpr.table.model.TableData;
+import br.pucpr.table.model.TableDataListener;
+import br.pucpr.table.model.ObservableTableData;
 import br.pucpr.table.reflection.Column;
 import java.util.ArrayList;
 
-public final class Table {
+public final class Table implements TableDataListener {
   private TableData data;
   private Theme theme;
   private boolean alignRight;
@@ -14,6 +16,7 @@ public final class Table {
       throw new IllegalArgumentException("Data cannot be null");
     }
     this.data = data;
+    registerListener(this.data);
     setTheme(theme);
     this.alignRight = alignRight;
   }
@@ -31,7 +34,12 @@ public final class Table {
   }
 
   public void setData(TableData data) {
+    if (data == null) {
+      throw new IllegalArgumentException("Data cannot be null");
+    }
+    unregisterListener(this.data);
     this.data = data;
+    registerListener(this.data);
   }
 
   public Theme getTheme() {
@@ -56,6 +64,25 @@ public final class Table {
 
   public void print() {
     System.out.print(this);
+  }
+
+  @Override
+  public void onDataChanged(TableData source) {
+    if (source == this.data) {
+      print();
+    }
+  }
+
+  private void registerListener(TableData data) {
+    if (data instanceof ObservableTableData observable) {
+      observable.addListener(this);
+    }
+  }
+
+  private void unregisterListener(TableData data) {
+    if (data instanceof ObservableTableData observable) {
+      observable.removeListener(this);
+    }
   }
 
   private String headerLine() {

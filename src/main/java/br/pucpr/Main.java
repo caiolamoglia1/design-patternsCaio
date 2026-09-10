@@ -27,14 +27,16 @@ public class Main {
     usuarios.add(new User(105L, "Lucas Mendes", "lucas@email.com", "12345"));
     usuarios.add(new User(106L, "", "beatriz@email.com", "55566677788"));
 
+    final var usuariosData =
+        new ColumnTableData<>(
+            usuarios, new IdColumn(), new CpfColumn(), new EmailColumn(), new NameColumn());
+
     System.out.println("IMPRIMINDO USUARIOS");
     System.out.println("-------------------");
-    new Table(
-            new ColumnTableData<>(
-                usuarios, new IdColumn(), new CpfColumn(), new EmailColumn(), new NameColumn()),
-            LIGHT,
-            true)
+    new Table(usuariosData, LIGHT, true)
         .print();
+
+    usuariosData.addRow(new User(107L, "Paula Nunes", "paula.nunes@email.com", "33344455566"));
 
     final var planetas = new ArrayList<Planet>();
     planetas.add(new Planet("Mercúrio", 4879, 57_910_000L, ROCK));
